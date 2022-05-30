@@ -1,7 +1,7 @@
-use axum::{extract::{Multipart, Path}, Extension, Json};
+use axum::{extract::Multipart, Extension, Json};
 use serde_json::Value;
 
-use crate::{error::Error, App, models::DocumentPubId};
+use crate::{error::Error, App};
 
 /// Handles incoming requests and transforms the attached CSV to JSON.
 pub async fn post_csv(
@@ -16,7 +16,6 @@ pub async fn post_csv(
 
     Ok(Json(json_value))
 }
-
 
 #[cfg(test)]
 mod route_tests {
@@ -53,7 +52,8 @@ DAL,Dallas,Texas
             .body(Body::from(body))
             .unwrap();
 
-        let res = router().await.oneshot(req).await.unwrap();
+        let app = app().await;
+        let res = router(app).await.oneshot(req).await.unwrap();
         assert_eq!(res.status(), StatusCode::OK);
 
         let body = hyper::body::to_bytes(res.into_body()).await.unwrap();

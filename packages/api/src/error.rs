@@ -3,6 +3,8 @@ use std::result::Result as StdResult;
 use axum::{extract::multipart::MultipartError, http::StatusCode, response::IntoResponse, Json};
 use serde::{Serialize, Serializer};
 
+use crate::models::DocumentPubId;
+
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error("Failed to parse the CSV")]
@@ -14,6 +16,12 @@ pub enum Error {
     #[error("The request did not contain a CSV file")]
     MissingFile,
 
+    #[error("Database Error {0:?}")]
+    Database(#[from] sqlx::Error),
+
+    #[error("The document with pub id {0:?} does not exist")]
+    DocumentNotFound(DocumentPubId),
+
     #[error("Unknown error occurred")]
     Unknown,
 }
@@ -22,14 +30,16 @@ impl Error {
     pub fn status_code(&self) -> StatusCode {
         match self {
             Self::Parse(_) | Self::Multipart(_) | Self::MissingFile => StatusCode::BAD_REQUEST,
-            Self::Unknown => StatusCode::INTERNAL_SERVER_ERROR,
+            Self::DocumentNotFound(_) => StatusCode::NOT_FOUND,
+            Self::Unknown | Self::Database(_) => StatusCode::INTERNAL_SERVER_ERROR,
         }
     }
 
     pub fn message(&self) -> String {
         match self {
             Self::Multipart(_) | Self::Parse(_) | Self::MissingFile => self.to_string(),
-            Self::Unknown => "An unknown error occurred".to_owned(),
+            Self::DocumentNotFound(_) => "The requested resource could not be found".to_string(),
+            Self::Unknown | Self::Database(_) => "An unknown error occurred".to_owned(),
         }
     }
 }
