@@ -1,13 +1,16 @@
 use std::{env, sync::Arc};
 
-use axum::{routing::{post, get}, Extension, Router};
+use axum::{
+    routing::{get, post},
+    Extension, Router,
+};
 use service::{DocumentService, TransformService};
 use sqlx::PgPool;
 
 mod error;
+mod http;
 mod models;
 mod service;
-mod http;
 
 pub struct Config {
     /// connection string for the database
