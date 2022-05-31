@@ -27,11 +27,9 @@ impl Display for DocumentPubId {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, sqlx::FromRow, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, sqlx::FromRow, Serialize, Deserialize)]
 pub struct Document {
-    #[serde(skip)]
     pub(crate) id: DocumentId,
-    #[serde(rename(serialize = "id"))]
     pub(crate) pub_id: DocumentPubId,
     pub(crate) created_at: Timestamp,
     pub(crate) updated_at: Timestamp,

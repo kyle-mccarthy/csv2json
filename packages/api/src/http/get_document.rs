@@ -2,21 +2,23 @@ use axum::{extract::Path, Extension, Json};
 
 use crate::{
     error::{Error, Result},
-    models::{Document, DocumentPubId},
+    models::{DocumentPubId},
     App,
 };
+
+use super::response::DocumentResponse;
 
 pub async fn get_document(
     Path(id): Path<DocumentPubId>,
     Extension(app): Extension<App>,
-) -> Result<Json<Document>> {
+) -> Result<Json<DocumentResponse>> {
     let document = app
         .documents
         .find_by_pub_id(id)
         .await?
         .ok_or(Error::DocumentNotFound(id))?;
 
-    Ok(Json(document))
+    Ok(Json(document.into()))
 }
 
 #[cfg(test)]

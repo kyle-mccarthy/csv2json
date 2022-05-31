@@ -1,20 +1,24 @@
 use axum::{extract::Multipart, Extension, Json};
-use serde_json::Value;
 
 use crate::{error::Error, App};
+
+use super::response::DocumentResponse;
 
 /// Handles incoming requests and transforms the attached CSV to JSON.
 pub async fn post_csv(
     Extension(app): Extension<App>,
     mut multi: Multipart,
-) -> Result<Json<Value>, Error> {
+) -> Result<Json<DocumentResponse>, Error> {
     let field = multi.next_field().await?.ok_or(Error::MissingFile)?;
 
-    let content = field.bytes().await?;
+    let title = field.file_name().unwrap_or("unnamed").to_owned();
+    let file_contents = field.bytes().await?;
 
-    let json_value = app.transformer.csv_to_json(content.as_ref())?;
+    let contents = app.transformer.csv_to_json(file_contents.as_ref())?;
 
-    Ok(Json(json_value))
+    let result = app.documents.insert(title, contents).await?;
+
+    Ok(Json(result.into()))
 }
 
 #[cfg(test)]
@@ -24,10 +28,9 @@ mod route_tests {
         http::{self, Request},
     };
     use hyper::StatusCode;
-    use serde_json::Value;
     use tower::ServiceExt;
 
-    use crate::{app, router};
+    use crate::{app, http::response::DocumentResponse, router};
 
     #[tokio::test]
     async fn test_post_csf() {
@@ -58,13 +61,13 @@ DAL,Dallas,Texas
 
         let body = hyper::body::to_bytes(res.into_body()).await.unwrap();
 
-        let found = serde_json::from_slice::<Value>(&body).unwrap();
+        let found = serde_json::from_slice::<DocumentResponse>(&body).unwrap();
         let expected = serde_json::json!([
             {"iata": "STL", "city": "St. Louis", "state": "Missouri"},
             {"iata": "CHI", "city": "Chicago", "state": "Illinois"},
             {"iata": "DAL", "city": "Dallas", "state": "Texas"}
         ]);
 
-        assert_eq!(found, expected);
+        assert_eq!(found.contents, expected);
     }
 }
