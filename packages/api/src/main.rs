@@ -67,7 +67,7 @@ pub type App = Arc<State>;
 #[tokio::main]
 async fn main() {
     let host = env::var("HOST").unwrap_or("127.0.0.1".into());
-    let port = env::var("PORT").unwrap_or("3000".into());
+    let port = env::var("PORT").unwrap_or("3001".into());
 
     let addr = format!("{host}:{port}");
 

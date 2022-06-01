@@ -25,7 +25,7 @@ command with the env var above if it hasn't been exported)_
 
 3. Run the API
 
-- By default the API will run on 127.0.0.1:3000, this can be configured with
+- By default the API will run on 127.0.0.1:3001, this can be configured with
   the `HOST` and `PORT` env variables
 - Make sure that the `DATABASE_URL` env variable has been exported or prepended
   to the command. By default it will use
