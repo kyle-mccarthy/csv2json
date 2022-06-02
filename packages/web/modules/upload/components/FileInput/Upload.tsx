@@ -1,7 +1,7 @@
+import Button from "@modules/core/components/Button";
 import { keyframes, styled } from "@modules/core/theme";
 import { SymbolIcon } from "@radix-ui/react-icons";
 import { ComponentProps } from "react";
-import Button from "./Button";
 
 const spin = keyframes({
   from: {

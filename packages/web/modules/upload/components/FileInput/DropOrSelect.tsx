@@ -1,6 +1,6 @@
 import { styled } from "@modules/core/theme";
 import { ChangeEvent, useCallback, useRef } from "react";
-import Button from "./Button";
+import Button from "@modules/core/components/Button";
 
 const Container = styled("div", {
   mx: "auto",

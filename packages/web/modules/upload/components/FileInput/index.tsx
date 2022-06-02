@@ -4,7 +4,7 @@ import DropIcon, { Variant } from "../../icons/DropIcon";
 import DropOrSelect from "./DropOrSelect";
 import Upload from "./Upload";
 import useDragAndDrop from "@modules/upload/hooks/useDragAndDrop";
-import Button from "./Button";
+import Button from "@modules/core/components/Button";
 import Preview from "./Preview";
 import { useRouter } from "next/router";
 import { UploadedDocument } from "@modules/core/types";
