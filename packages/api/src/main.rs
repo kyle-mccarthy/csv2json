@@ -6,6 +6,7 @@ use axum::{
 };
 use service::{DocumentService, TransformService};
 use sqlx::PgPool;
+use tower_http::cors::{self, AllowMethods, CorsLayer};
 
 mod error;
 mod http;
@@ -52,7 +53,13 @@ pub async fn router(app: App) -> Router {
     Router::new()
         .route("/transform/csv-to-json", post(http::post_csv))
         .route("/document/:id", get(http::get_document))
+        .route("/document/:id/download", get(http::download_document))
         .layer(Extension(app))
+        .layer(
+            CorsLayer::new()
+                .allow_methods(AllowMethods::any())
+                .allow_origin(cors::Any),
+        )
 }
 
 #[derive(Clone)]

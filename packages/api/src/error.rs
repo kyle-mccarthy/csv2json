@@ -1,6 +1,7 @@
 use std::result::Result as StdResult;
 
 use axum::{extract::multipart::MultipartError, http::StatusCode, response::IntoResponse, Json};
+use hyper::header::InvalidHeaderValue;
 use serde::{Serialize, Serializer};
 
 use crate::models::DocumentPubId;
@@ -22,8 +23,8 @@ pub enum Error {
     #[error("The document with pub id {0:?} does not exist")]
     DocumentNotFound(DocumentPubId),
 
-    #[error("Unknown error occurred")]
-    Unknown,
+    #[error("Invalid header value :: {0:?}")]
+    InvalidHeaderValue(#[from] InvalidHeaderValue),
 }
 
 impl Error {
@@ -31,7 +32,7 @@ impl Error {
         match self {
             Self::Parse(_) | Self::Multipart(_) | Self::MissingFile => StatusCode::BAD_REQUEST,
             Self::DocumentNotFound(_) => StatusCode::NOT_FOUND,
-            Self::Unknown | Self::Database(_) => StatusCode::INTERNAL_SERVER_ERROR,
+            Self::Database(_) | Self::InvalidHeaderValue(_) => StatusCode::INTERNAL_SERVER_ERROR,
         }
     }
 
@@ -39,7 +40,9 @@ impl Error {
         match self {
             Self::Multipart(_) | Self::Parse(_) | Self::MissingFile => self.to_string(),
             Self::DocumentNotFound(_) => "The requested resource could not be found".to_string(),
-            Self::Unknown | Self::Database(_) => "An unknown error occurred".to_owned(),
+            Self::Database(_) | Self::InvalidHeaderValue(_) => {
+                "An unknown error occurred".to_owned()
+            }
         }
     }
 }
