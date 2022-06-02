@@ -1,4 +1,7 @@
-use axum::{extract::Multipart, Extension, Json};
+use axum::{
+    extract::{ContentLengthLimit, Multipart},
+    Extension, Json,
+};
 
 use crate::{error::Error, App};
 
@@ -7,7 +10,7 @@ use super::response::DocumentResponse;
 /// Handles incoming requests and transforms the attached CSV to JSON.
 pub async fn post_csv(
     Extension(app): Extension<App>,
-    mut multi: Multipart,
+    ContentLengthLimit(mut multi): ContentLengthLimit<Multipart, { 25 * 1024 * 1024 }>,
 ) -> Result<Json<DocumentResponse>, Error> {
     let field = multi.next_field().await?.ok_or(Error::MissingFile)?;
 
