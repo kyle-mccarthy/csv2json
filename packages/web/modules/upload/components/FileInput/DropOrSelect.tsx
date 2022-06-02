@@ -19,7 +19,7 @@ const Directions = styled("div", {
 });
 
 const Text = styled("div", {
-  color: "$slate11",
+  color: "$indigo10",
   fontWeight: "500",
   textTransform: "uppercase",
   mx: "auto",
@@ -89,7 +89,7 @@ const DropOrSelect = ({ onSetFile }: Props) => {
             <span>or</span>
           </Or>
         </div>
-        <Button type="button" onClick={handleClick}>
+        <Button type="button" onClick={handleClick} color="blue">
           select file
         </Button>
         <Input ref={inputRef} type="file" onChange={onSetValue} />

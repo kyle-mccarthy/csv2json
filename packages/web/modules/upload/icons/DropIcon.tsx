@@ -18,7 +18,7 @@ const variants = {
   }
 };
 
-type Variant = "plus" | "arrow" | "check";
+export type Variant = "plus" | "arrow" | "check";
 
 interface Props {
   variant?: Variant;

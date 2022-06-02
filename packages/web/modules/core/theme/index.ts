@@ -1,5 +1,12 @@
 import { createStitches } from "@stitches/react";
-import { slateDark, indigoDark, greenDark, redDark } from "@radix-ui/colors";
+import {
+  slateDark,
+  indigoDark,
+  indigoDarkA,
+  greenDark,
+  redDark,
+  yellowDark,
+} from "@radix-ui/colors";
 
 import space from "./space";
 
@@ -19,6 +26,8 @@ export const {
       ...indigoDark,
       ...greenDark,
       ...redDark,
+      ...indigoDarkA,
+      ...yellowDark,
     },
     fontSizes: {
       xs: "0.75rem",
@@ -61,6 +70,12 @@ export const {
         marginLeft: `calc(1rem * ${value})`,
       },
     }),
+    spaceY: (value: number | string) => ({
+      ["&>:not([hidden])~:not([hidden])"]: {
+        marginTop: `calc(1rem * ${value})`,
+      },
+    }),
+
     py: (value: number | string) => ({
       paddingTop: value,
       paddingBottom: value,
@@ -90,5 +105,8 @@ const trackingValues = {
 type Tracking = keyof typeof trackingValues;
 
 export const globalStyles = globalCss({
-  body: { fontFamily: "InterVariable", margin: 0, padding: 0 },
+  body: { fontFamily: "Inter", margin: 0, padding: 0 },
+  "@supports (font-variation-settings: normal)": {
+    body: { fontFamily: "InterVariable", margin: 0, padding: 0 },
+  },
 });
