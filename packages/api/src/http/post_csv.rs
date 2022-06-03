@@ -3,9 +3,8 @@ use axum::{
     Extension, Json,
 };
 
-use crate::{error::Error, App};
-
 use super::response::DocumentResponse;
+use crate::{error::Error, App};
 
 /// Handles incoming requests and transforms the attached CSV to JSON.
 pub async fn post_csv(

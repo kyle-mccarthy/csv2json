@@ -6,9 +6,11 @@ use axum::{
 };
 use service::{DocumentService, TransformService};
 use sqlx::PgPool;
-use tower_http::{cors::{self, AllowMethods, CorsLayer}, trace::TraceLayer};
+use tower_http::{
+    cors::{self, AllowMethods, CorsLayer},
+    trace::TraceLayer,
+};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
-
 
 mod error;
 mod http;

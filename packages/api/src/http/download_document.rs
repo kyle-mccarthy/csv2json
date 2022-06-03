@@ -5,13 +5,12 @@ use axum::{
     Extension, Json,
 };
 
+use super::response::DocumentResponse;
 use crate::{
     error::{Error, Result},
     models::DocumentPubId,
     App,
 };
-
-use super::response::DocumentResponse;
 
 pub async fn download_document(
     Path(id): Path<DocumentPubId>,

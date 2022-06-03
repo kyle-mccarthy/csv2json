@@ -1,12 +1,11 @@
 use axum::{extract::Path, Extension, Json};
 
+use super::response::DocumentResponse;
 use crate::{
     error::{Error, Result},
-    models::{DocumentPubId},
+    models::DocumentPubId,
     App,
 };
-
-use super::response::DocumentResponse;
 
 pub async fn get_document(
     Path(id): Path<DocumentPubId>,
