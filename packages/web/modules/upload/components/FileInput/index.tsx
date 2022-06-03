@@ -123,7 +123,7 @@ const FileInput = (): ReactElement => {
 
     upload()
       .then((res) => {
-        console.log(res);
+        return res;
       })
       .catch((err) => {
         console.error(err);

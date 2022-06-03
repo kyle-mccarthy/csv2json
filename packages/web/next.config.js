@@ -7,6 +7,9 @@ const nextConfig = {
       "http://localhost:3001",
   },
   reactStrictMode: true,
+  experimental: {
+    outputStandalone: true,
+  },
 };
 
 module.exports = nextConfig;

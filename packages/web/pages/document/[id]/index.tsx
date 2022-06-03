@@ -7,7 +7,6 @@ interface Props {
 }
 
 const ViewDocumentPage: NextPage<Props> = ({ id }) => {
-  console.log(id);
   return (
     <>
       <Head>

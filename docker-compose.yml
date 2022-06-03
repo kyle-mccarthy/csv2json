@@ -1,0 +1,37 @@
+version: "3"
+services:
+  web:
+    build: ./packages/web
+    ports:
+      - 3000:8080
+    depends_on:
+      - api
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:3001
+  api:
+    build: ./packages/api
+    ports:
+      - 3001:8080
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@db/csv2json
+    depends_on:
+      - db
+    networks:
+      - backend
+  db:
+    image: "postgres:latest"
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSGRES_DB=csv2json
+    ports:
+      - 15432:5432
+    volumes:
+      - ./scripts/initdb.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge

@@ -6,7 +6,9 @@ use axum::{
 };
 use service::{DocumentService, TransformService};
 use sqlx::PgPool;
-use tower_http::cors::{self, AllowMethods, CorsLayer};
+use tower_http::{cors::{self, AllowMethods, CorsLayer}, trace::TraceLayer};
+use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
+
 
 mod error;
 mod http;
@@ -35,9 +37,10 @@ impl Config {
 pub async fn app() -> App {
     let config = Config::new();
 
-    let pool = PgPool::connect(&config.db_url)
-        .await
-        .expect("failed to create the connection pool");
+    let pool = PgPool::connect(&config.db_url).await.expect(&format!(
+        "failed to create the connection pool on {}",
+        &config.db_url
+    ));
 
     let state = State {
         transformer: TransformService::default(),
@@ -60,6 +63,7 @@ pub async fn router(app: App) -> Router {
                 .allow_methods(AllowMethods::any())
                 .allow_origin(cors::Any),
         )
+        .layer(TraceLayer::new_for_http())
 }
 
 #[derive(Clone)]
@@ -73,12 +77,27 @@ pub type App = Arc<State>;
 
 #[tokio::main]
 async fn main() {
+    tracing_subscriber::registry()
+        .with(tracing_subscriber::EnvFilter::new(
+            std::env::var("RUST_LOG")
+                .unwrap_or_else(|_| "csv2json_api=debug,tower_http=warn".into()),
+        ))
+        .with(tracing_subscriber::fmt::layer())
+        .init();
+
     let host = env::var("HOST").unwrap_or("127.0.0.1".into());
     let port = env::var("PORT").unwrap_or("3001".into());
 
     let addr = format!("{host}:{port}");
 
     let app = app().await;
+
+    sqlx::migrate!()
+        .run(&app.pool)
+        .await
+        .expect("failed to run migrations");
+
+    tracing::debug!("successfully ran db migrations");
 
     axum::Server::bind(&addr.parse().expect("invalid host or port provided"))
         .serve(router(app).await.into_make_service())
